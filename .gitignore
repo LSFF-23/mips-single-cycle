@@ -1,0 +1,14 @@
+# ivlog files
+*.out
+.dvt
+*.log
+
+# questa files
+*.mpf
+work/
+*.wlf
+*.cr.mti
+
+# document files
+*.pdf
+*.png
