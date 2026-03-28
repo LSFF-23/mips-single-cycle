@@ -12,3 +12,7 @@ work/
 # document files
 *.pdf
 *.png
+
+# unwanted tb_ files
+tb_*.sv
+tb_*.v
