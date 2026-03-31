@@ -8,6 +8,7 @@
 work/
 *.wlf
 *.cr.mti
+*.vcd
 
 # document files
 *.pdf
