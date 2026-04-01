@@ -47,6 +47,19 @@ register_file regfile_inst (
     .read_data2(read_data2)
 );
 
+wire [2:0] alu_ctrl;
+wire [31:0] imm32 = {{16{imm16[15]}}, imm16};
+wire [31:0] alu_b = (alu_src) ? imm32 : read_data2;
+alu_control aluc_inst (alu_op, funct, alu_ctrl);
 
+wire signed [31:0] r;
+wire zero;
+alu alu_inst (
+    .a(read_data1),
+    .b(alu_b),
+    .op(alu_ctrl),
+    .r(r),
+    .zero(zero)
+);
 
 endmodule
