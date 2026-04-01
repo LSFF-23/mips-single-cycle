@@ -17,6 +17,7 @@ output_files/
 *.qpf
 *.qsf
 *.bak
+*.qws
 
 # document files
 *.pdf
