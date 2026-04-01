@@ -1,4 +1,7 @@
-module mips_sc (input clk, rstn);
+module mips_sc (
+    input clk, rstn,
+    output [31:0] out_data, out_pc
+);
 wire [31:0] cur_pc;
 // pc instance moved down
 
@@ -80,5 +83,8 @@ wire is_jump = (opcode == 6'b000010);
 wire [31:0] jump_addr = {pc_plus4[31:28], instr[25:0], 2'b00};
 wire [31:0] next_pc = (is_jump) ? jump_addr : ((take_branch) ? branch_addr : pc_plus4);
 pc pc_inst (clk, rstn, next_pc, cur_pc);
+
+assign out_data = write_data;
+assign out_pc = cur_pc;
 
 endmodule
