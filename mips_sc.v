@@ -1,7 +1,6 @@
 module mips_sc (input clk, rstn);
 wire [31:0] cur_pc;
-wire [31:0] next_pc = cur_pc + 32'h4;
-pc pc_inst (clk, rstn, next_pc, cur_pc);
+// pc instance moved down
 
 wire [31:0] instr;
 instr_mem imem_inst (cur_pc, instr);
@@ -34,7 +33,6 @@ wire [5:0] funct = instr[5:0];
 wire [15:0] imm16 = instr[15:0];
 wire [4:0] write_addr = (reg_dst) ? rd : rt;
 wire [31:0] write_data, read_data1, read_data2;
-assign write_data = 32'b0;
 register_file regfile_inst (
     .clk(clk),
     .rstn(rstn),
@@ -61,5 +59,24 @@ alu alu_inst (
     .r(r),
     .zero(zero)
 );
+
+wire [31:0] mem_read_data;
+assign write_data = (load_mem) ? mem_read_data : r;
+data_mem dmem_inst (
+    .clk(clk),
+    .rstn(rstn),
+    .mem_write(mem_write),
+    .mem_read(mem_read),
+    .addr(r),
+    .write_data(read_data2),
+    .read_data(mem_read_data)
+);
+
+// branch calculations require later declared wires
+wire [31:0] pc_plus4 = cur_pc + 32'h4;
+wire [31:0] branch_addr = pc_plus4 + (imm32 << 2);
+wire take_branch = branch & zero;
+wire [31:0] next_pc = (take_branch) ? branch_addr : pc_plus4;
+pc pc_inst (clk, rstn, next_pc, cur_pc);
 
 endmodule
