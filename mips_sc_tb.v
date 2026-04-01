@@ -4,11 +4,14 @@ module mips_sc_tb;
 
     reg clk;
     reg rstn;
+    wire [31:0] out_data, out_pc;
 
     // Instancia o processador
     mips_sc uut (
         .clk(clk),
-        .rstn(rstn)
+        .rstn(rstn),
+        .out_data(out_data),
+        .out_pc(out_pc)
     );
 
     // Clock de 10ns

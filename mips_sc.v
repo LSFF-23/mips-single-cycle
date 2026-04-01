@@ -13,7 +13,7 @@ wire reg_dst;
 wire branch;
 wire mem_read;
 wire mem_write;
-wire load_mem;
+wire mem2reg;
 wire alu_src;
 wire reg_write;
 wire [1:0] alu_op;
@@ -23,7 +23,7 @@ control_unit mcu_inst (
     .branch(branch),
     .mem_read(mem_read),
     .mem_write(mem_write),
-    .load_mem(load_mem),
+    .mem2reg(mem2reg),
     .alu_src(alu_src),
     .reg_write(reg_write),
     .alu_op(alu_op)
@@ -64,7 +64,7 @@ alu alu_inst (
 );
 
 wire [31:0] mem_read_data;
-assign write_data = (load_mem) ? mem_read_data : r;
+assign write_data = (mem2reg) ? mem_read_data : r;
 data_mem dmem_inst (
     .clk(clk),
     .rstn(rstn),

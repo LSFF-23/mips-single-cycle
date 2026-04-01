@@ -4,7 +4,7 @@ module control_unit (
     output branch,
     output mem_read,
     output mem_write,
-    output load_mem,
+    output mem2reg,
     output alu_src,
     output reg_write,
     output [1:0] alu_op
@@ -15,7 +15,7 @@ assign reg_dst = control_bus[8];
 assign branch = control_bus[7];
 assign mem_read = control_bus[6];
 assign mem_write = control_bus[5];
-assign load_mem = control_bus[4];
+assign mem2reg = control_bus[4];
 assign alu_src = control_bus[3];
 assign reg_write = control_bus[2];
 assign alu_op = control_bus[1:0];

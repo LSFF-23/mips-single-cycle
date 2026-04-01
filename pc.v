@@ -10,7 +10,7 @@ assign cur_pc = pc_reg;
 
 always @(posedge clk or negedge rstn) begin
     if (!rstn)
-        pc_reg <= 32'h00400000;
+        pc_reg <= 32'h00400000; // load from file later?
     else
         pc_reg <= next_pc;
 end
