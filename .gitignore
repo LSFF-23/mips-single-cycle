@@ -10,6 +10,13 @@ work/
 *.cr.mti
 *.vcd
 
+# quartus files
+db/
+incremental_db/
+output_files/
+*.qpf
+*.qsf
+
 # document files
 *.pdf
 *.png
