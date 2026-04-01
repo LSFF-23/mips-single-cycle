@@ -76,7 +76,9 @@ data_mem dmem_inst (
 wire [31:0] pc_plus4 = cur_pc + 32'h4;
 wire [31:0] branch_addr = pc_plus4 + (imm32 << 2);
 wire take_branch = branch & zero;
-wire [31:0] next_pc = (take_branch) ? branch_addr : pc_plus4;
+wire is_jump = (opcode == 6'b000010);
+wire [31:0] jump_addr = {pc_plus4[31:28], instr[25:0], 2'b00};
+wire [31:0] next_pc = (is_jump) ? jump_addr : ((take_branch) ? branch_addr : pc_plus4);
 pc pc_inst (clk, rstn, next_pc, cur_pc);
 
 endmodule

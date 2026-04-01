@@ -2,7 +2,6 @@
 
 module mips_sc_tb;
 
-    // Sinais do Testbench
     reg clk;
     reg rstn;
 
@@ -12,7 +11,7 @@ module mips_sc_tb;
         .rstn(rstn)
     );
 
-    // Geração do Clock (período de 10ns)
+    // Clock de 10ns
     always #5 clk = ~clk;
 
     initial begin
@@ -20,47 +19,42 @@ module mips_sc_tb;
         clk = 0;
         rstn = 0;
 
-        // Reset do sistema
-        $display("Iniciando Simulação...");
+        $display("Iniciando Simulação: Soma de 1 a 10");
         #15 rstn = 1;
 
-        // Aguarda a execução de algumas instruções
-        // Como o programa tem ~18 instruções, 200ns é suficiente para um Single Cycle
-        #250;
-
-        // --- VERIFICAÇÃO DOS RESULTADOS ---
-        
-        $display("----------------------------------------------");
-        $display("Verificando resultados finais na Data Memory:");
-        
-        // Verificação do endereço 80 (0x50) - Esperado: 7
-        if (uut.dmem_inst.dmem[20] === 32'd7) begin // 80/4 = index 20 se for word-addressed
-            $display("[SUCESSO] Memoria[80] = %d", uut.dmem_inst.dmem[20]);
-        end else begin
-            $display("[ERRO] Memoria[80] esperado: 7, obtido: %d", uut.dmem_inst.dmem[20]);
-        end
-
-        // Verificação do endereço 84 (0x54) - Esperado: 7
-        if (uut.dmem_inst.dmem[21] === 32'd7) begin // 84/4 = index 21
-            $display("[SUCESSO] Memoria[84] = %d", uut.dmem_inst.dmem[21]);
-        end else begin
-            $display("[ERRO] Memoria[84] esperado: 7, obtido: %d", uut.dmem_inst.dmem[21]);
-        end
+        // Aguarda tempo suficiente para as 10 iterações do loop
+        // Cada volta no loop faz ~4 instruções. 10 voltas = 40 + setup/end.
+        // 800ns é seguro para um Single Cycle a 100MHz.
+        #800;
 
         $display("----------------------------------------------");
-        $display("Verificando Registradores Finais:");
-        $display("$v0 (reg 2)  = %d (Esperado: 7)", uut.regfile_inst.regfile[2]);
-        $display("$v1 (reg 3)  = %d (Esperado: 12)", uut.regfile_inst.regfile[3]);
-        $display("$a1 (reg 5)  = %d (Esperado: 11)", uut.regfile_inst.regfile[5]);
-        $display("$a3 (reg 7)  = %d (Esperado: 7)", uut.regfile_inst.regfile[7]);
+        $display("Verificando Resultado Final:");
         
+        // O resultado esperado de 1+2...+10 é 55 (0x37 em hexa)
+        
+        // 1. Verifica no Register File ($t0 é o reg 8)
+        if (uut.regfile_inst.regfile[8] === 32'd55) begin
+            $display("[SUCESSO] Registrador $t0 (Soma) = %d", uut.regfile_inst.regfile[8]);
+        end else begin
+            $display("[ERRO] $t0 esperado: 55, obtido: %d", uut.regfile_inst.regfile[8]);
+        end
+
+        // 2. Verifica na Data Memory (Endereço 100)
+        // Se sua memória for word-addressed (array de 32 bits), index = 100/4 = 25
+        if (uut.dmem_inst.dmem[25] === 32'd55) begin
+            $display("[SUCESSO] Memoria[100] = %d", uut.dmem_inst.dmem[25]);
+        end else begin
+            $display("[ERRO] Memoria[100] esperado: 55, obtido: %d", uut.dmem_inst.dmem[25]);
+        end
+
+        $display("----------------------------------------------");
         $finish;
     end
 
-    // Opcional: Monitor de Instruções
+    // Monitor para acompanhar a evolução da soma
     always @(posedge clk) begin
-        if (rstn) begin
-            $display("Time: %0t | PC: %h | Instr: %h", $time, uut.cur_pc, uut.instr);
+        if (rstn && uut.reg_write && uut.write_addr == 5'd8) begin
+            $display("Time: %0t | PC: %h | Soma parcial ($t0): %d", $time, uut.cur_pc, uut.write_data);
         end
     end
 

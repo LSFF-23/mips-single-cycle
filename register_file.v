@@ -6,22 +6,17 @@ module register_file (
     input [31:0] write_data,
     output [31:0] read_data1, read_data2
 );
-
 reg [31:0] regfile [31:0];
-
-wire rd1_forward = write_enable && (write_addr != 5'b0) && (read_addr1 == write_addr);
-wire rd2_forward = write_enable && (write_addr != 5'b0) && (read_addr2 == write_addr);
-assign read_data1 = rd1_forward ? write_data : regfile[read_addr1];
-assign read_data2 = rd2_forward ? write_data : regfile[read_addr2];
-
 integer i;
+
+assign read_data1 = (read_addr1 == 5'b0) ? 32'b0 : regfile[read_addr1];
+assign read_data2 = (read_addr2 == 5'b0) ? 32'b0 : regfile[read_addr2];
+
 always @(posedge clk or negedge rstn) begin
     if (!rstn) begin
-        for (i = 0; i < 32; i = i + 1)
-            regfile[i] <= 32'b0;
-    end else begin
-        if (write_enable && (write_addr != 5'b0))
-            regfile[write_addr] <= write_data;
+        for (i = 0; i < 32; i = i + 1) regfile[i] <= 32'b0;
+    end else if (write_enable && (write_addr != 5'b0)) begin
+        regfile[write_addr] <= write_data;
     end
 end
 
