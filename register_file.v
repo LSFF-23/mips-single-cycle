@@ -13,6 +13,7 @@ assign read_data1 = (read_addr1 == 5'b0) ? 32'b0 : regfile[read_addr1];
 assign read_data2 = (read_addr2 == 5'b0) ? 32'b0 : regfile[read_addr2];
 
 always @(posedge clk or negedge rstn) begin
+	i = 0;
     if (!rstn) begin
         for (i = 0; i < 32; i = i + 1) regfile[i] <= 32'b0;
     end else if (write_enable && (write_addr != 5'b0)) begin
